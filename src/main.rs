@@ -1,3 +1,4 @@
+use std::io::{self, Write};
 use std::rc::Rc;
 use std::thread;
 use std::time::Duration;
@@ -8,13 +9,27 @@ use onvars_tool::process_reader::ProcessHandle;
 
 fn main() {
     println!("OnVar's Tool (version {})", env!("CARGO_PKG_VERSION"));
-    let handle_opt = ProcessHandle::from_name_filter(|n| n == "sonic2app.exe").unwrap();
-    let handle = if let Some(handle) = handle_opt {
-        handle
-    } else {
-        println!("Error: sa2app.exe not found");
-        return;
-    };
+    let mut process_string = "sonic2app.exe".to_string();
+    let handle;
+    'process_hook_loop: loop {
+        match ProcessHandle::from_name_filter(|n| n == process_string).unwrap() {
+            Some(h) => {
+                handle = h;
+                break 'process_hook_loop;
+            }
+            None => {
+                println!();
+                println!("Could not find process \"{}\".", process_string);
+                println!("Please enter the name of the SA2 process.");
+                print!("Process name: ");
+                io::stdout().flush().unwrap();
+                let stdin = io::stdin();
+                process_string.clear();
+                stdin.read_line(&mut process_string).unwrap();
+                process_string = process_string.trim().to_string();
+            }
+        }
+    }
 
     let mut units: Vec<Rc<dyn SaveStateUnit>> = vec![
         Rc::new(CharacterUnit::new()),
@@ -44,15 +59,19 @@ fn main() {
         prev_game_state = game_state;
 
         if buttons_pressed & 0x1 != 0 {
-            save_level = level;
-            save_valid = true;
-            for unit in units.iter_mut() {
-                match Rc::get_mut(unit).unwrap().save(&handle) {
-                    Ok(()) => {}
-                    Err(string) => println!("Error: {}", string),
+            if game_state != 0 {
+                save_level = level;
+                save_valid = true;
+                for unit in units.iter_mut() {
+                    match Rc::get_mut(unit).unwrap().save(&handle) {
+                        Ok(()) => {}
+                        Err(string) => println!("Error: {}", string),
+                    }
                 }
+                println!("Saving state");
+            } else {
+                println!("Not in level. Cannot save state.")
             }
-            println!("Saving state");
         }
 
         if buttons_pressed & 0x2 != 0 {
