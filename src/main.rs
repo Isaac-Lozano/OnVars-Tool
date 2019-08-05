@@ -32,6 +32,8 @@ fn main() {
     }
 
     println!();
+    println!("Successfully hooked into \"{}\".", process_string);
+    println!();
     println!("Press D-pad Left to save a state.");
     println!("Press D-pad Right to load a state.");
 
