@@ -1,0 +1,11 @@
+[package]
+name = "onvars_tool"
+version = "0.2.0"
+authors = ["Isaac Lozano <Isaac-Lozano@users.noreply.github.com>"]
+edition = "2018"
+
+[dependencies]
+
+[dependencies.winapi]
+version = "0.3.6"
+features = ["psapi", "memoryapi", "processthreadsapi"]
