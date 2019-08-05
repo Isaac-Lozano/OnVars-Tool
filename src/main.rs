@@ -31,6 +31,10 @@ fn main() {
         }
     }
 
+    println!();
+    println!("Press D-pad Left to save a state.");
+    println!("Press D-pad Right to load a state.");
+
     let mut units: Vec<Rc<dyn SaveStateUnit>> = vec![
         Rc::new(CharacterUnit::new()),
         Rc::new(CameraUnit::new()),
