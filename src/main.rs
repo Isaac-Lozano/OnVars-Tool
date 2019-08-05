@@ -12,7 +12,7 @@ fn main() {
     let mut process_string = "sonic2app.exe".to_string();
     let handle;
     'process_hook_loop: loop {
-        match ProcessHandle::from_name_filter(|n| n == process_string).unwrap() {
+        match ProcessHandle::from_name_filter(|n| n.to_lowercase() == process_string.to_lowercase()).unwrap() {
             Some(h) => {
                 handle = h;
                 break 'process_hook_loop;
