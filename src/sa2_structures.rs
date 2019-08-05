@@ -151,13 +151,61 @@ impl SaveStateable for CharacterPhys {
     }
 }
 
+// Struct that holds info about collision with the level
+struct LevelCollision([u8;0x84]);
+
+impl LevelCollision {
+    fn new() -> LevelCollision {
+        LevelCollision([0;0x84])
+    }
+}
+
+impl SaveStateable for LevelCollision {
+    fn save(&mut self, handle: &ProcessHandle, address: u64) -> Result<(), &'static str> {
+        handle.read_data(address, &mut self.0)?;
+        Ok(())
+    }
+
+    fn load(&self, handle: &ProcessHandle, address: u64) -> Result<(), &'static str> {
+        handle.write_data(address, &self.0)?;
+        Ok(())
+    }
+}
+
+// Top level physics struct
+struct PhysicsStruct {
+    data: CharacterPhys,
+    level_collision: Pointer<LevelCollision>,
+}
+
+impl PhysicsStruct {
+    fn new() -> PhysicsStruct {
+        PhysicsStruct {
+            data: CharacterPhys::SpeedPhys([0;0x3a0]),
+            level_collision: Pointer::new(LevelCollision::new()),
+        }
+    }
+}
+
+impl SaveStateable for PhysicsStruct {
+    fn save(&mut self, handle: &ProcessHandle, address: u64) -> Result<(), &'static str> {
+        self.data.save(handle, address)?;
+        self.level_collision.save(handle, address + 0x90)
+    }
+
+    fn load(&self, handle: &ProcessHandle, address: u64) -> Result<(), &'static str> {
+        self.data.load(handle, address)?;
+        self.level_collision.load(handle, address + 0x90)
+    }
+}
+
 // Character Task Struct
 // We don't care about all the funciton pointers. They don't change.
 // We just care about the pointers to data.
 pub struct Character {
     acs: Pointer<ActionStruct>,
     gms: Pointer<GlobalMetricStruct>,
-    phs: Pointer<CharacterPhys>,
+    phs: Pointer<PhysicsStruct>,
 }
 
 impl Character {
@@ -165,7 +213,7 @@ impl Character {
         Character {
             acs: Pointer(ActionStruct::new()),
             gms: Pointer(GlobalMetricStruct([0;0x40])),
-            phs: Pointer(CharacterPhys::SpeedPhys([0;0x3a0])),
+            phs: Pointer(PhysicsStruct::new()),
         }
     }
 }
