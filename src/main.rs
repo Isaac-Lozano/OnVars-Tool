@@ -50,7 +50,9 @@ fn main() {
     let mut save_valid = false;
     let mut prev_game_state = 0;
     loop {
-        handle.write_data(0x0174B050, b"\x01\x00\x00\x00").unwrap();
+        let mut score = handle.read_u32(0x0174B050).unwrap();
+        score = score - (score % 10) + 1;
+        handle.write_u32(0x0174B050, score).unwrap();
         let buttons = handle.read_u32(0x01A52C4C).unwrap();
         let buttons_pressed = !prev_buttons & buttons;
         prev_buttons = buttons;
