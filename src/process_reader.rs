@@ -139,6 +139,21 @@ impl ProcessHandle {
         }
         Ok(bytes_written)
     }
+
+    pub fn write_u32(&self, address: u64, value: u32) -> Result<(), &'static str> {
+        let buf = [
+            value as u8,
+            (value >> 0x08) as u8,
+            (value >> 0x10) as u8,
+            (value >> 0x18) as u8,
+        ];
+        let bytes_written = self.write_data(address, &buf)?;
+        if bytes_written == 4 {
+            Ok(())
+        } else {
+            Err("not enough bytes written")
+        }
+    }
 }
 
 #[derive(Clone,Copy,Debug)]
