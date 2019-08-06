@@ -56,6 +56,18 @@ impl SaveStateable for u8 {
     }
 }
 
+impl SaveStateable for u32 {
+    fn save(&mut self, handle: &ProcessHandle, address: u64) -> Result<(), &'static str> {
+        *self = handle.read_u32(address)?;
+        Ok(())
+    }
+
+    fn load(&self, handle: &ProcessHandle, address: u64) -> Result<(), &'static str> {
+        handle.write_u32(address, *self)?;
+        Ok(())
+    }
+}
+
 // Represents a whole unit of stuff to save.
 pub trait SaveStateUnit {
     fn save(&mut self, handle: &ProcessHandle) -> Result<(), &'static str>;
