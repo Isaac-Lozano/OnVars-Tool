@@ -154,6 +154,16 @@ impl ProcessHandle {
             Err("not enough bytes written")
         }
     }
+
+    pub fn write_u8(&self, address: u64, value: u8) -> Result<(), &'static str> {
+        let buf = [value];
+        let bytes_written = self.write_data(address, &buf)?;
+        if bytes_written == 1 {
+            Ok(())
+        } else {
+            Err("not enough bytes written")
+        }
+    }
 }
 
 #[derive(Clone,Copy,Debug)]

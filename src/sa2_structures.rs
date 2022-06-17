@@ -1,6 +1,7 @@
 use crate::process_reader::ProcessHandle;
 use crate::{SaveStateable, Pointer};
 
+
 struct CollisionElement([u8;0x30]);
 
 impl CollisionElement {
@@ -127,19 +128,21 @@ impl SaveStateable for CharacterPhys {
 
     fn load(&self, handle: &ProcessHandle, address: u64) -> Result<(), &'static str> {
         let character_id = handle.read_u8(address + 0x1)?;
+        
         match *self {
-            CharacterPhys::SpeedPhys(buf) => {
+            CharacterPhys::SpeedPhys(mut buf) => {
                 if character_id != 0 && character_id != 1 {
                     return Err("current character does not match savestate character");
                 }
-                handle.write_data(address, &buf)?;
+                
+                 handle.write_data(address, &buf)?;
             }
             CharacterPhys::HuntPhys(buf) => {
                 if character_id != 4 && character_id != 5 {
                     return Err("current character does not match savestate character");
                 }
                 handle.write_data(address, &buf)?;
-            }
+            }   
             CharacterPhys::MechPhys(buf) => {
                 if character_id != 6 && character_id != 7 {
                     return Err("current character does not match savestate character");
@@ -147,6 +150,7 @@ impl SaveStateable for CharacterPhys {
                 handle.write_data(address, &buf)?;
             }
         }
+        
         Ok(())
     }
 }
@@ -173,7 +177,7 @@ impl SaveStateable for LevelCollision {
 }
 
 // Top level physics struct
-struct PhysicsStruct {
+struct PhysicsStruct {  
     data: CharacterPhys,
     level_collision: Pointer<LevelCollision>,
 }
