@@ -101,12 +101,11 @@ fn main() {
                 }
             }
         }
-        //B,X, and start
-        if buttons_pressed & 0x1600 == 0x1600 {
+        //start while holding B+X
+        if buttons_pressed & 0x1000 != 0 && prev_buttons & 0x600 != 0  {
             if game_state != 0 {
                 handle.write_u8(0x174b024, 99).unwrap();
                 println!("Lives set to 99");
-                
             }
         }
         // second-frame savestate load for collision stuff
