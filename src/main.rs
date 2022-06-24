@@ -36,7 +36,7 @@ fn main() {
     println!();
     println!("Press D-pad Left to save a state.");
     println!("Press D-pad Right to load a state.");
-    println!("Press B+X+Start to reset lives to 99.");
+    println!("Hold B+X and press Start to reset lives to 99.");
 
     let mut units: Vec<Rc<dyn SaveStateUnit>> = vec![
         Rc::new(CharacterUnit::new()),
@@ -62,10 +62,10 @@ fn main() {
         let level = handle.read_u32(0x1934B70).unwrap();
 
         let game_state = handle.read_u32(0x1934BE0).unwrap();
-        if prev_game_state != 0 && game_state == 0 {
+        /*if prev_game_state != 0 && game_state == 0 {
             save_valid = false;
             println!("Exited level. Invalidating savestate.")
-        }   
+        }   */
         prev_game_state = game_state;
 
         if buttons_pressed & 0x1 != 0 {
@@ -100,7 +100,7 @@ fn main() {
                     }
                 }
             }
-        }
+        }   
         //start while holding B+X
         if buttons_pressed & 0x1000 != 0 && prev_buttons & 0x600 != 0  {
             if game_state != 0 {

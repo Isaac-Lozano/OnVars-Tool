@@ -98,14 +98,7 @@ impl ProcessHandle {
         if bytes_read != 4 {
             panic!("Not enough bytes read");
         }
-        let mut value = 0;
-        value |= buf[3] as i32;
-        value <<= 8;
-        value |= buf[2] as i32;
-        value <<= 8;
-        value |= buf[1] as i32;
-        value <<= 8;
-        value |= buf[0] as i32;
+        let value = i32::from_le_bytes(buf);
         Ok(value)
     }
 
@@ -115,14 +108,7 @@ impl ProcessHandle {
         if bytes_read != 4 {
             panic!("Not enough bytes read");
         }
-        let mut value = 0;
-        value |= buf[3] as u32;
-        value <<= 8;
-        value |= buf[2] as u32;
-        value <<= 8;
-        value |= buf[1] as u32;
-        value <<= 8;
-        value |= buf[0] as u32;
+        let value = u32::from_le_bytes(buf);
         Ok(value)
     }
 
@@ -141,12 +127,7 @@ impl ProcessHandle {
     }
 
     pub fn write_u32(&self, address: u64, value: u32) -> Result<(), &'static str> {
-        let buf = [
-            value as u8,
-            (value >> 0x08) as u8,
-            (value >> 0x10) as u8,
-            (value >> 0x18) as u8,
-        ];
+        let buf = value.to_le_bytes();
         let bytes_written = self.write_data(address, &buf)?;
         if bytes_written == 4 {
             Ok(())
