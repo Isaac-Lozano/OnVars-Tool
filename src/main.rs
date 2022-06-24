@@ -62,10 +62,10 @@ fn main() {
         let level = handle.read_u32(0x1934B70).unwrap();
 
         let game_state = handle.read_u32(0x1934BE0).unwrap();
-        /*if prev_game_state != 0 && game_state == 0 {
+        if prev_game_state != 0 && game_state == 0 {
             save_valid = false;
             println!("Exited level. Invalidating savestate.")
-        }   */
+        }   
         prev_game_state = game_state;
 
         if buttons_pressed & 0x1 != 0 {
