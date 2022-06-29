@@ -36,6 +36,7 @@ fn main() {
     println!();
     println!("Press D-pad Left to save a state.");
     println!("Press D-pad Right to load a state.");
+    println!("Hold B+X and press Start to reset lives to 99.");
 
     let mut units: Vec<Rc<dyn SaveStateUnit>> = vec![
         Rc::new(CharacterUnit::new()),
@@ -49,13 +50,14 @@ fn main() {
     let mut frame_opt = None;
     let mut save_valid = false;
     let mut prev_game_state = 0;
+
     loop {
         let mut score = handle.read_u32(0x0174B050).unwrap();
         score = score - (score % 10) + 1;
         handle.write_u32(0x0174B050, score).unwrap();
         let buttons = handle.read_u32(0x01A52C4C).unwrap();
         let buttons_pressed = !prev_buttons & buttons;
-        prev_buttons = buttons;
+        prev_buttons = buttons; 
 
         let level = handle.read_u32(0x1934B70).unwrap();
 
@@ -63,7 +65,7 @@ fn main() {
         if prev_game_state != 0 && game_state == 0 {
             save_valid = false;
             println!("Exited level. Invalidating savestate.")
-        }
+        }   
         prev_game_state = game_state;
 
         if buttons_pressed & 0x1 != 0 {
@@ -89,6 +91,7 @@ fn main() {
                 println!("Error: not the same stage as savestate");
             } else {
                 println!("Loading state");
+                
                 frame_opt = Some(handle.read_u32(0x0174b03c).unwrap());
                 for unit in units.iter() {
                     match unit.load(&handle) {
@@ -97,10 +100,17 @@ fn main() {
                     }
                 }
             }
+        }   
+        //start while holding B+X
+        if buttons_pressed & 0x1000 != 0 && prev_buttons & 0x600 != 0  {
+            if game_state != 0 {
+                handle.write_u8(0x174b024, 99).unwrap();
+                println!("Lives set to 99");
+            }
         }
-
         // second-frame savestate load for collision stuff
         if let Some(frame) = frame_opt {
+
             if frame != handle.read_u32(0x0174b03c).unwrap() {
                 for unit in units.iter() {
                     match unit.load(&handle) {

@@ -2,6 +2,7 @@ use crate::{SaveStateUnit, SaveStateable, Pointer};
 use crate::process_reader::ProcessHandle;
 use crate::sa2_structures::{Character, Camera, PastPositionTable};
 
+
 pub struct CharacterUnit {
     character: Pointer<Character>,
 }
@@ -16,10 +17,12 @@ impl CharacterUnit {
 
 impl SaveStateUnit for CharacterUnit {
     fn save(&mut self, handle: &ProcessHandle) -> Result<(), &'static str> {
+
         self.character.save(handle, 0x01dea6e0)
     }
 
     fn load(&self, handle: &ProcessHandle) -> Result<(), &'static str> {
+        
         self.character.load(handle, 0x01dea6e0)
     }
 }

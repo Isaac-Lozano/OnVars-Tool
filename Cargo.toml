@@ -1,8 +1,16 @@
 [package]
 name = "onvars_tool"
-version = "1.0.0"
-authors = ["Isaac Lozano <Isaac-Lozano@users.noreply.github.com>"]
+version = "1.0.1"
+authors = ["Isaac Lozano <Isaac-Lozano@users.noreply.github.com>", "Labrys"]
 edition = "2018"
+
+[[bin]]
+name = "onvars_tool"
+path = "src/main.rs"
+
+[lib]
+name = "onvars_tool"
+path = "src/lib.rs"
 
 [dependencies]
 

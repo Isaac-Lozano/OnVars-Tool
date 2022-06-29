@@ -14,3 +14,5 @@ Usage
 On starting the program, it'll bring up a command line which displays info.
 
 To save a state, press D-pad Left. To load a state, press D-pad Right.
+
+To reset your life count to 99, hold B+X and press start.
